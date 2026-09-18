@@ -70,7 +70,7 @@ body {
 .footer-links a { width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--cor-prime); background: var(--cor-fundo); font-size: 1.5rem; transition: all 0.3s ease; box-shadow: 4px 4px 0px var(--cor-prime); color: var(--cor-prime); text-decoration: none; }
 .footer-links a:hover { transform: translate(-3px, -3px); background: var(--cor-primary); box-shadow: 7px 7px 0px var(--cor-prime); color: #fff; }
 
-.theme-toggle-btn { background-color: var(--cor-accent); color: var(--cor-prime); border: var(--border-width) solid var(--cor-prime); padding: 0.4rem 0.6rem; cursor: pointer; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 3px 3px 0px var(--cor-prime); transition: all 0.3s ease; }
+.theme-toggle-btn { background-color: var(--cor-accent); color: var(--cor-prime); border: var(--border-width) solid var(--cor-prime); padding: 0.4rem 0.6rem; cursor: pointer; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 3px 3px 0px var(--cor-prime); transition: all 0.3s ease; @media (max-width: 768px) { font-size: 1rem; padding: 0.3rem 0.5rem; } }
 .theme-toggle-btn:hover { background-color: var(--cor-secondary); color: #fff; }
 .theme-toggle-btn:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--cor-prime); }
 .theme-toggle-btn i { display: block; line-height: 1; }
@@ -203,4 +203,179 @@ body::after { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0,
   .sys-section-title { display: block; margin: 0 auto 2.5rem auto; text-align: center; }
   .projects-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .mobile-dpad { display: grid; }
+}
+
+.navbar-sys.navbar-hidden {
+  transform: translateY(-100%);
+}
+
+/* ==========================================
+   PIXEL VINYL MUSIC PLAYER (CUSTOM UI)
+========================================== */
+#pixel-music-player {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px;
+  z-index: 9999;
+  margin-bottom: 0;
+  box-shadow: 6px 6px 0px var(--cor-prime);
+  background-color: var(--cor-fundo);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#pixel-music-player.minimized {
+  transform: translateY(calc(100% - 12px));
+  @media (max-width: 768px) {
+    transform: translateY(calc(100% - 22px));
+  }
+  box-shadow: 4px 4px 0px var(--cor-prime);
+}
+
+#pixel-music-player .player-header {
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+#pixel-music-player .player-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 1.2rem;
+  background-image: radial-gradient(var(--cor-accent) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* Marquee / Scrolling Title */
+.marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid var(--cor-prime);
+  padding: 6px 4px;
+  white-space: nowrap;
+  box-shadow: inset 2px 2px 0px rgba(255,255,255,0.1);
+}
+
+.marquee-text {
+  display: inline-block;
+  color: var(--cor-secondary);
+  font-size: 0.65rem;
+  animation: marquee-scroll 8s linear infinite;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(250px); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Bigger Vinyl Design */
+.vinyl-container {
+  width: 130px;
+  height: 130px;
+  position: relative;
+  filter: drop-shadow(5px 5px 0px var(--cor-prime));
+}
+
+.pixel-vinyl {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  border-radius: 50%;
+  /* Creates realistic grooves for a larger vinyl */
+  box-shadow: inset 0 0 0 4px #222, inset 0 0 0 10px #111, inset 0 0 0 16px #222, inset 0 0 0 24px #111, inset 0 0 0 30px #222;
+  border: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Custom Controls */
+.custom-controls {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.custom-controls button {
+  padding: 0.6rem 0.8rem;
+  font-size: 1.2rem;
+}
+
+.vinyl-center {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #000;
+  z-index: 2;
+  position: relative;
+
+  background-color: var(--cor-primary);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.vinyl-center::after {
+  content: "";
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 7px;
+  height: 7px;
+
+  transform: translate(-50%, -50%);
+
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+
+  z-index: 3;
+}
+
+.pixel-vinyl.spinning {
+  animation: spin-vinyl 5s linear infinite;
+}
+.pixel-vinyl.paused {
+  animation-play-state: paused;
+}
+
+@keyframes spin-vinyl {
+  100% { transform: rotate(360deg); }
+}
+
+/* Hide actual YT player visually, but keep a valid viewport */
+.yt-hidden-engine {
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  left: -1000px;
+  top: -1000px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#yt-player {
+  width: 200px;
+  height: 200px;
+}
+
+@media (max-width: 768px) {
+  #pixel-music-player {
+    bottom: 10px;
+    right: 10px;
+    width: 250px;
+  }
 }

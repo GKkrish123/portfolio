@@ -324,8 +324,154 @@ function initMiniGame() {
     draw(); 
 }
 
+// ==========================================
+// AUTO-HIDE HEADER ON SCROLL
+// ==========================================
+function initScrollHeader() {
+    const header = document.querySelector('.navbar-sys');
+    if (!header) return;
+
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+
+        // Hide header if scrolling down and past the initial top section
+        if (currentScrollY > lastScrollY && currentScrollY > 80) {
+            header.classList.add('navbar-hidden');
+        } 
+        // Show header if scrolling up
+        else {
+            header.classList.remove('navbar-hidden');
+        }
+
+        // Update last scroll position
+        lastScrollY = currentScrollY;
+    }, { passive: true }); // passive: true improves scroll performance
+}
+
+let ytPlayer;
+
+function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('yt-player', {
+        height: '200',
+        width: '200',
+
+        playerVars: {
+            listType: 'playlist',
+            list: 'PLYyEWAlkRM2U',
+            controls: 0,
+            disablekb: 1,
+            autoplay: 0,
+            playsinline: 1
+        },
+
+        events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+            onError: onPlayerError
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    const playlist = ytPlayer.getPlaylist();
+
+    if (playlist?.length) {
+        ytPlayer.setShuffle(true);
+
+        const randomIndex = Math.floor(Math.random() * playlist.length);
+        ytPlayer.playVideoAt(randomIndex);
+        ytPlayer.pauseVideo();
+    }
+
+    const playBtn = document.getElementById('btn-play');
+    const prevBtn = document.getElementById('btn-prev');
+    const nextBtn = document.getElementById('btn-next');
+
+    playBtn?.addEventListener('click', () => {
+        const state = ytPlayer.getPlayerState();
+
+        if (state === YT.PlayerState.PLAYING) {
+            ytPlayer.pauseVideo();
+        } else {
+            ytPlayer.playVideo();
+        }
+    });
+
+    prevBtn?.addEventListener('click', () => {
+        ytPlayer.previousVideo();
+    });
+
+    nextBtn?.addEventListener('click', () => {
+        ytPlayer.nextVideo();
+    });
+}
+
+function onPlayerStateChange(event) {
+    const vinyl = document.querySelector('.pixel-vinyl');
+    const playBtn = document.getElementById('btn-play');
+    const trackName = document.getElementById('track-name');
+    const vinylThumb = document.getElementById('vinyl-thumb');
+
+    // Get current video information
+    if (ytPlayer && ytPlayer.getVideoData) {
+        const data = ytPlayer.getVideoData();
+
+        if (data?.title) {
+            trackName.innerText = `NOW PLAYING: ${data.title} ***`;
+
+            if (data.video_id) {
+                vinylThumb.style.backgroundImage =
+                    `url('https://img.youtube.com/vi/${data.video_id}/hqdefault.jpg')`;
+            }
+
+            vinylThumb.style.backgroundSize = 'cover';
+            vinylThumb.style.backgroundPosition = 'center';
+        }
+    }
+
+    // Playing
+    if (event.data === YT.PlayerState.PLAYING) {
+        vinyl?.classList.add('spinning');
+        vinyl?.classList.remove('paused');
+
+        if (playBtn) {
+            playBtn.innerHTML = "<i class='bx bx-pause'></i>";
+        }
+    }
+
+    // Everything else = paused
+    else {
+        vinyl?.classList.add('paused');
+
+        if (playBtn) {
+            playBtn.innerHTML = "<i class='bx bx-play'></i>";
+        }
+    }
+}
+
+function onPlayerError(event) {
+    console.error('YouTube Player Error:', event.data);
+}
+
+function initMusicPlayerToggle() {
+    const player = document.getElementById('pixel-music-player');
+    const header = player?.querySelector('.player-header');
+    const toggleIcon = document.getElementById('player-toggle-icon');
+    
+    if (!player || !header) return;
+
+    header.addEventListener('click', () => {
+        const isMinimized = player.classList.toggle('minimized');
+        toggleIcon.className = isMinimized ? 'bx bx-chevron-up' : 'bx bx-chevron-down';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderProjects();
     initThemeMenu();
     initMiniGame();
+    initScrollHeader();
+    initMusicPlayerToggle();
 });
