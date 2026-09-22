@@ -355,15 +355,17 @@ body::after { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0,
   100% { transform: rotate(360deg); }
 }
 
-/* Hide actual YT player visually, but keep a valid viewport */
+/* YouTube refuses playback in off-screen / display:none / opacity:0 iframes.
+   Keep a real 200x200 viewport, just make it unreadable to users. */
 .yt-hidden-engine {
   position: fixed;
+  left: 0;
+  bottom: 0;
   width: 200px;
   height: 200px;
-  left: -1000px;
-  top: -1000px;
+  z-index: -1;
   overflow: hidden;
-  opacity: 0;
+  opacity: 0.01;
   pointer-events: none;
 }
 
